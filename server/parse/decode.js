@@ -4,7 +4,6 @@ function Decode(packet){
     var buffer = Buffer.from(packet);
     var size = packet.readUInt32LE(0);
     
-    console.log(buffer);
     buffer = buffer.slice(4);
     var items = parse(buffer , 0); 
 
@@ -13,24 +12,26 @@ function Decode(packet){
         length : size
     }
 }
+const parsing = {
+    0 : () => {return { data : null , length : 0}},
+    1 : parseBool,
+    2 : parseInt,
+    0x00010002: parseInt64,
+    3 : parseFloat,
+    0x00010003: parseReal,
+    4 : parseString,
+    5 : parseVector2,
+    6 : parseRect2,
+    7 : parseVector3,
+    8 : parseTransform2D,
+    9 : parsePlane
+}
 
 function parse(buffer , offset){
     var t = buffer.readUInt32LE( offset );
     offset += 4;
-    switch(t){
-        case TYPE.NIL: return { data : null , length : 0 };
-        case TYPE.BOOL: return parseBool(buffer , offset);
-        case TYPE.INT: return parseInt(buffer , offset);
-        case TYPE.INT64: return parseInt64( buffer , offset);
-        case TYPE.FLOAT: return parseFloat( buffer , offset);
-        case TYPE.REAL: return parseReal( buffer , offset);
-        case TYPE.STRING: return parseString(buffer, offset);
-        case TYPE.VECTOR2: return parseVector2(buffer , offset);
-        case TYPE.RECT2: return parseRect2(buffer , offset);
-        case TYPE.VECTOR3: return parseVector3(buffer , offset);
-        case TYPE.TRANSFORM2D: return parseTransform2D(buffer , offset);
-        case TYPE.PLANE: return parsePlane(buffer , offset);
-    }
+    if(t in parsing)
+        return parsing[t](buffer , offset);
 
     // others datas t > TYPE.MAX
     return null;

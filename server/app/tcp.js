@@ -4,7 +4,9 @@ const packet = require('../parse');
 var server = net.createServer( socket => {
 
     socket.on('data' , chunk => {
-        socket.write(packet.encode(packet.decode(chunk).data));
+        var a = packet.decode(chunk).data;
+        var b = packet.encode(a);
+        socket.write(b);
     });
 
     socket.on('drain' , () => {

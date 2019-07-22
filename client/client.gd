@@ -45,8 +45,9 @@ func _process(delta):
 		err_count = 0
 		
 	if connected:
-		if peerstream.get_available_bytes():
+		if peerstream.get_available_packet_count() > 0:
 			var data = peerstream.get_var()
+			print(data ,' : ' , OS.get_ticks_msec())
 			emit_signal('data_arrived' , data)
 		pass
 		

@@ -3,27 +3,29 @@ const TYPE = require('../class');
 function Encode(data){
     var buffer = Buffer.alloc(4);
     var packet = pack(data);
-    console.log(packet);
     buffer.writeUInt32LE(packet.length);
     return Buffer.concat([buffer , packet]);
 };
 
-function pack(data){
-    var type = typeof data;
-    if(data === null) return encodeNull();
-    if(type === 'boolean') return encodeBool(data);
-    if(type === 'number') return encodeDouble(data);
-    if(type === 'string') return encodeString(data);
-    if(type === 'object'){
+const packing = {
+    'boolean' : encodeBool,
+    'number' : encodeDouble,
+    'string' : encodeString,
+    'object' : data => {
         if(data.encode){
             return data.encode();
-        }else{
-            
-        }
-    }
-    if(type === 'function'){
-        console.log('function');
-    }
+        }else ;
+    },
+    'function' : encodeNull
+}
+
+function pack(data){
+    if(data === null)
+        return encodeNull()
+
+    var type = typeof data;
+
+    return packing[type](data);
 }
 
 function encodeNull(){

@@ -2,6 +2,7 @@ extends Node2D
 
 
 func _on_Timer_timeout():
-	client.send(Plane(1,2,3,4))
+	print('send : ' ,OS.get_ticks_msec())
+	client.send(Vector2(5,4))
 	pass
 
