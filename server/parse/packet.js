@@ -1,0 +1,3 @@
+var gd = require('../class');
+
+
