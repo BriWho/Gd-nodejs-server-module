@@ -1,5 +1,5 @@
 const Gd = require('./class');
-const server = require('./app')('tcp');
+const server = require('./app')('ws');
 
 const port = 8080;
 const host = '127.0.0.1';

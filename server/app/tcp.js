@@ -1,5 +1,5 @@
 const net = require('net');
-const packet = require('../parse');
+const packet = require('../packet');
 
 var server = net.createServer( socket => {
 
