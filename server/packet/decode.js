@@ -34,7 +34,7 @@ function parse(buffer , offset = 0){
     if(t in parsing)
         return parsing[t](buffer , offset);
 
-    // others datas t > TYPE.MAX
+    // others data t > TYPE.MAX
     return null;
 }
 
