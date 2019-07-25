@@ -1,38 +1,20 @@
 const WebSocket = require('ws');
-var pack = require('../packet').pack;
-var parse = require('../packet').parse;
 
-function startWebSocket(port){
-    console.log('start server');
-    const wss = new WebSocket.Server({ port : 8080 
-    /*  ,
-        perMessageDeflate : {
-            zlibDeflateOptions : {
-                chunkSize: 1024,
-                memLevel : 7,
-                level: 3
-            },
-            zlibInflateOptions : {
-                chunkSize: 10 * 1024
-            },
-            clientNoContextTakeover: true,
-            serverNoContextTakeover: true,
-            serverMaxWindowBits: 10,
-            concurrencyLimit : 10,
-            threshold : 1024
-        }*/
-    });
+function startWebSocket(port , host , client){
+    const wss = new WebSocket.Server({ port : port });
+    console.log('server listening on ws://localhost:' + port);
 
     wss.on('connection' , ws => {
+        
+        var uid = client.init(ws);
 
         ws.on('message' , message => {
-            var a = parse(message).data;
-            var b = pack(a);
-            ws.send(b);
+            
+        //    client.request(uid , ws , message );
         })
 
         ws.on('close' , () => {
-
+            client.end();
         })
 
     });

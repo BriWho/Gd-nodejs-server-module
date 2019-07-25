@@ -12,6 +12,7 @@ function decode(packet){
         length : size
     }
 }
+
 const parsing = {
     0 : () => {return { data : null , length : 0}},
     1 : parseBool,
@@ -134,5 +135,5 @@ function parsePlane(buffer , offset){
     }
 }
 
-module.decode = decode;
+exports.decode = decode;
 exports.parse = parse;

@@ -1,6 +1,6 @@
 extends Node
 
-const url : String = "ws://localhost:8080"
+const url : String = "ws://localhost:6300"
 const disconnect_waittime : int = 10
 var client : WebSocketClient = null
 var reconnect : Timer = null
@@ -17,6 +17,7 @@ func _ready():
 	print('connect to server')
 	
 func _connection_established(protocol):
+
 	print("connect to " , protocol)
 	pass
 	
@@ -33,8 +34,8 @@ func _process(delta):
 		client.poll()
 	if client.get_peer(1).is_connected_to_host():
 		if client.get_peer(1).get_available_packet_count() > 0:
-			var data = client.get_peer(1).get_var()
-			print(data , ' : ', OS.get_ticks_msec())
+			var buffer = client.get_peer(1).get_var()
+
 	
 	pass
 

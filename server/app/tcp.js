@@ -1,26 +1,25 @@
 const net = require('net');
 const packet = require('../packet');
 
-var server = net.createServer( socket => {
+function startserver( port , host = '127.0.0.1', client){
 
-    socket.on('data' , chunk => {
-        var a = packet.decode(chunk).data;
-        var b = packet.encode(a);
-        socket.write(b);
+    var server = net.createServer( socket => {
+
+        var uid = client.init(socket);
+
+        socket.on('data' , chunk => {
+            client.request(uid , socket , chunk);
+        });
+    
+        socket.on('drain' , () => {
+    
+        });
+    
+        socket.on('end', () => {
+            client.end(uid , socket );
+        });
+    
     });
-
-    socket.on('drain' , () => {
-
-    });
-
-    socket.on('end', () => {
-        console.log('socket end');
-    });
-
-
-})
-
-function startserver( port , host = '127.0.0.1'){
 
     server.listen( port , host , () => {
         console.log(`Server listening on localhost: ${port}`); 
@@ -43,11 +42,4 @@ function startserver( port , host = '127.0.0.1'){
     });
 }
 
-function close(cb){
-    server.close(() => {
-        console.log(cb);
-    });
-};
-
 exports.start = startserver;
-exports.close = close;

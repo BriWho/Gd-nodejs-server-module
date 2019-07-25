@@ -6,6 +6,9 @@ module.exports = function(proto){
         else
             throw new Error('Argument is not a string');
 
+        if( proto === 'udp')
+            return require('./udp.js');
+        
         if( proto === 'tcp')
             return require('./tcp.js');
 
