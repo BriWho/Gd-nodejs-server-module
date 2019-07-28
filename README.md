@@ -1,21 +1,21 @@
 # Nodejs-to-Gd-socket-module
 
 > ### Client
-> > clientTcp.gd	
-> > clientUdp.gd	
-> > clientWS.gd		
-> > main.js		
-> > main.tscn	
+> > clientTcp.gd <br />	
+> > clientUdp.gd <br />
+> > clientWS.gd	 <br />
+> > main.js      <br />
+> > main.tscn
 > ### Server
 > > app
-> > > tcp.js	
-> > > udp.js	
+> > > tcp.js     <br />	
+> > > udp.js	   <br />
 > > > websocket.js	
 > > 
-> >	class	
+> >	class
 > >	packet
-> >	> decode.js		
-> >	> encode.js		
+> >	> decode.js  <br />		
+> >	> encode.js
 > > 
 > > client.js
 
