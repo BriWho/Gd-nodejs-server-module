@@ -14,31 +14,16 @@ function decode(packet){
 }
 
 const parsing = {
-    0 : () => {return { data : null , length : 0}},
-    1 : parseBool,
-    2 : parseInt,
-    0x00010002: parseInt64,
-    3 : parseFloat,
-    0x00010003: parseReal,
-    4 : parseString,
-    5 : parseVector2,
-    6 : parseRect2,
-    7 : parseVector3,
-    8 : parseTransform2D,
-    9 : parsePlane,
-    10: parseQuat,
-    11: parseAABB,
-    12: parseBasis,
-    13: parseTransform,
-    14: parseColor,
-    18: parseDict,
-    19: parseArray,
-    20: parseByteArray,
-    21: parseIntArray,
-    22: parseRealArray,
-    23: parseStringArray,
-    24: parseVector2Array,
-    25: parseVector3Array,
+    0 : parseNull, 1 : parseBool, 2 : parseInt,
+    0x00010002: parseInt64, 3 : parseFloat,
+    0x00010003: parseReal, 4 : parseString,
+    5 : parseVector2, 6 : parseRect2, 7 : parseVector3,
+    8 : parseTransform2D, 9 : parsePlane, 10: parseQuat,
+    11: parseAABB, 12: parseBasis, 13: parseTransform,
+    14: parseColor, 18: parseDict, 19: parseArray,
+    20: parseByteArray, 21: parseIntArray,
+    22: parseRealArray, 23: parseStringArray,
+    24: parseVector2Array, 25: parseVector3Array,
     26: parseColorArray
 }
 
@@ -54,6 +39,13 @@ function parse(buffer , offset = 0){
         data : item.data,
         length : item.length + 4
     };
+}
+
+function parseNull(buffer , offset){
+    return {
+        data : null,
+        length : 0
+    }
 }
 
 function parseBool(buffer , offset){
