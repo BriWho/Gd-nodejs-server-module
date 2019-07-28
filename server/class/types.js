@@ -21,7 +21,7 @@ const _GDTYPE = {
     NODE_PATH : 0x0000000F,    //TODO
    // RID : 10,  // do not support
    // OBJECT : 11, // do not support
-    DICTIONARY : 0x00000012,   //TODO
+    DICTIONARY : 0x00000012,
     ARRAY : 0x00000013,
     RAW_ARRAY : 0x00000014,
     INT_ARRAY : 0x00000015,
