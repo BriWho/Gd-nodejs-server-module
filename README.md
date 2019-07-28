@@ -1,7 +1,23 @@
 # Nodejs-to-Gd-socket-module
 
 > ### Client
-> 
+> > clientTcp.gd	
+> > clientUdp.gd	
+> > clientWS.gd		
+> > main.js		
+> > main.tscn	
+> ### Server
+> > app
+> > > tcp.js	
+> > > udp.js	
+> > > websocket.js	
+> > 
+> >	class	
+> >	packet
+> >	> decode.js		
+> >	> encode.js		
+> > 
+> > client.js
 
 ### reference : 
 .[binary_serialization](http://docs.godotengine.org/en/latest/tutorials/misc/binary_serialization_api.html)<br /> 
