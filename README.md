@@ -12,7 +12,7 @@
 > > > udp.js	   <br />
 > > > websocket.js	
 > > 
-> >	class
+> >	class <br />
 > >	packet
 > >	> decode.js  <br />		
 > >	> encode.js
