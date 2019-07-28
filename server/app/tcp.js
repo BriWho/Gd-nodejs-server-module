@@ -1,5 +1,4 @@
 const net = require('net');
-const packet = require('../packet');
 
 function startserver( port , host = '127.0.0.1', client){
 

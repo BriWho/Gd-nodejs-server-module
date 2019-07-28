@@ -1,14 +1,6 @@
-var v = require('./vector.js');
-var g = require('./global.js');
+var { Vector2 , isVector2 } = require('./vector.js');
+var { isFloat } = require('./global.js');
 var TYPE = require('./types.js');
-
-const node = {
-    0 : { 1: g.isFloat , 2: v.isVector2 , 'n': null },
-    1 : { 2: g.isFloat , 'n': null },
-    2 : { 3: g.isFloat , 4: v.isVector2 , 'n': null },
-    3 : { 4: g.isFloat , 'n': null },
-    4 : null
-};
 
 /**
  * 
@@ -18,37 +10,34 @@ const node = {
  */
 class Rect2{
     constructor(position, size){
-        this.position = new v.Vector2();
-        this.size = new v.Vector2();
-        var a = arguments, root = node[0];
-        for(var i = 0 ; i < a.length ; i++){
-            if(root === null)
-                throw new Error('constructor arguments are no valid!');
-            for(var idx in root){
-                if(idx == 'n') 
-                    throw new Error('constructor arguments are no valid!')
-                if(root[idx](a[i])){
-                    if(idx == 1 && i == 0) this.position.x = a[i];
-                    if(idx == 2 && i == 0) this.position = a[i];
-                    if(idx == 2 && i == 1) this.position.y = a[i]; 
-                    if(idx == 3 && i == 1) this.size.x = a[i];
-                    if(idx == 3 && i == 2) this.size.x = a[i];
-                    if(idx == 4 && i == 1) this.size = a[i];
-                    if(idx == 4 && i == 2) this.size.y = a[i];
-                    if(idx == 4 && i == 3) this.size.y = a[i];
-                    root = node[idx];
-                    break;
-                }
-            }
+        this.position = new Vector2();
+        this.size = new Vector2();
+        var a = arguments , i = 0;
+
+        if( isVector2(a[i]) ){
+            this.position = a[i++];
+        }else if( isFloat(a[i],a[i+1])){
+            this.position.x = a[i++];
+            this.position.y = a[i++];
         }
+
+        if( isVector2(a[i])){
+            this.size = a[i++];
+        }else if(isFloat(a[i],a[i+1])){
+            this.size.x = a[i++];
+            this.size.y = a[i++];
+        }
+
+        if( i !== arguments.length )
+            throw new Error('constructor arguments are no invalid!');
     };
 
     static set position(value){
-        if(!v.isVector2(value)) throw new Error('assignment is no valid!');
+        if(!isVector2(value)) throw new Error('assignment is no valid!');
         this.position = value;
     }
     static set size(value){
-        if(!v.isVector2(value)) throw new Error('assignment is no valid!');
+        if(!isVector2(value)) throw new Error('assignment is no valid!');
         this.size = value;
     }
     toString(){
@@ -56,13 +45,13 @@ class Rect2{
             ',size:' + this.size.toString() + '}'
     }
     encode(){
-        var buffer = Buffer.alloc(20);
-        buffer.writeInt32LE(TYPE.RECT2);
-        buffer.writeFloatLE(this.position.x , 4);
-        buffer.writeFloatLE(this.position.y , 8);
-        buffer.writeFloatLE(this.size.x , 12);
-        buffer.writeFloatLE(this.size.y , 16);
-        return buffer;
+        var pos = this.position.encode();
+        var size = this.size.encode();
+        return Buffer.concat([pos , size]);
+    }
+
+    get TYPE(){
+        return TYPE.RECT2;
     }
 };
 /**

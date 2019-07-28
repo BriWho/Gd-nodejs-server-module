@@ -1,6 +1,6 @@
 extends Node
 
-const PORT : int = 7200
+const PORT : int = 8080
 const HOST : String = '127.0.0.1'
 const disconnect_waittime : int = 10
 var client : StreamPeerTCP = null
@@ -47,7 +47,7 @@ func _process(delta):
 	if connected:
 		if peerstream.get_available_packet_count() > 0:
 			var data = peerstream.get_var()
-			print("tcp: " , data ,' : ' , OS.get_ticks_msec())
+			print(data ,' (', typeof(data) ,'): ' , OS.get_ticks_msec())
 			emit_signal('data_arrived' , data)
 		pass
 		

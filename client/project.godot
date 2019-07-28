@@ -21,9 +21,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-clientTcp="*res://clientTcp.gd"
-clientUdp="*res://clientUdp.gd"
-clientWS="*res://clientWS.gd"
+client="*res://clientTcp.gd"
 
 [debug]
 

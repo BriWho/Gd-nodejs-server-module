@@ -1,4 +1,4 @@
-const g = require('./global.js');
+const { isFloat } = require('./global.js');
 const TYPE = require('./types.js');
 /**
  * 
@@ -8,15 +8,16 @@ const TYPE = require('./types.js');
  */
 class Vector2{
     constructor(x = 0 , y = 0){
-        if(!g.isFloat(x,y) || arguments.length > 2) throw new Error('constructor arguments are not valid!');
+        if(!isFloat(x,y) || arguments.length > 2)
+            throw new Error('constructor arguments are invalid!');
         this.x = x,this.y = y;
     }
     static set x(value){
-        if(!g.isFloat(value)) throw new Error('assignment is not valid!');;
+        if(!isFloat(value)) throw new Error('assignment is invalid!');;
         this.x = value;
     }
     static set y(value){
-        if(!g.isFloat(value)) throw new Error('assignment is not valid!');;
+        if(!isFloat(value)) throw new Error('assignment is invalid!');;
         this.y = value;
     }
 
@@ -25,11 +26,14 @@ class Vector2{
     }
 
     encode(){
-        var buffer = Buffer.alloc(12);
-        buffer.writeInt32LE( TYPE.VECTOR2 );
-        buffer.writeFloatLE( this.x , 4);
-        buffer.writeFloatLE( this.y , 8);
+        var buffer = Buffer.alloc(8);
+        buffer.writeFloatLE( this.x);
+        buffer.writeFloatLE( this.y , 4);
         return buffer;
+    }
+
+    get TYPE(){
+        return TYPE.VECTOR2;
     }
 };
 /**
@@ -62,27 +66,30 @@ function isVector2(x){
 class Vector3 extends Vector2{
     constructor(x = 0 , y = 0 , z = 0){
         super(x , y);
-        if(!g.isFloat(z) || arguments.length > 3)
-            throw new Error('constructor arguments are not valid!');
+        if(!isFloat(z) || arguments.length > 3)
+            throw new Error('constructor arguments are invalid!');
         this.z = z;
     }
     static set z(value){
-        if(!g.isFloat(value)) throw new Error('assignment is not valid!');
+        if(!isFloat(value)) throw new Error('assignment is invalid!');
         this.z = value;
     }
 
     toString(){
         return `(${this.x},${this.y},${this.z})`;
-    }
+    };
 
     encode(){
-        var buffer = Buffer.alloc(16);
-        buffer.writeInt32LE( TYPE.VECTOR3);
-        buffer.writeFloatLE( this.x , 4);
-        buffer.writeFloatLE( this.y , 8);
-        buffer.writeFloatLE( this.z , 12);
+        var buffer = Buffer.alloc(12);
+        buffer.writeFloatLE( this.x );
+        buffer.writeFloatLE( this.y , 4);
+        buffer.writeFloatLE( this.z , 8);
         return buffer;
-    }
+    };
+
+    get TYPE(){
+        return TYPE.VECTOR3;
+    };
 };
 
 /**

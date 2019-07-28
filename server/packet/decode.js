@@ -5,11 +5,11 @@ function decode(packet){
     var size = packet.readUInt32LE(0);
     
     buffer = buffer.slice(4);
-    var items = parse(buffer); 
+    var items = parse(buffer);
 
     return {
         data : items.data,
-        length : size
+        length : size + 4
     }
 }
 
@@ -25,22 +25,40 @@ const parsing = {
     6 : parseRect2,
     7 : parseVector3,
     8 : parseTransform2D,
-    9 : parsePlane
+    9 : parsePlane,
+    10: parseQuat,
+    11: parseAABB,
+    12: parseBasis,
+    13: parseTransform,
+    14: parseColor,
+    18: parseDict,
+    19: parseArray,
+    20: parseByteArray,
+    21: parseIntArray,
+    22: parseRealArray,
+    23: parseStringArray,
+    24: parseVector2Array,
+    25: parseVector3Array,
+    26: parseColorArray
 }
 
 function parse(buffer , offset = 0){
     var t = buffer.readUInt32LE( offset );
     offset += 4;
+    var item = parsing[0](buffer , offset);
     if(t in parsing)
-        return parsing[t](buffer , offset);
+        item = parsing[t](buffer , offset);
 
     // others datas t > TYPE.MAX
-    return null;
+    return {
+        data : item.data,
+        length : item.length + 4
+    };
 }
 
 function parseBool(buffer , offset){
     return {
-        data : buffer.readInt32LE(offset) !== 0,
+        data : buffer.readInt8(offset) !== 0,
         length : 4
     }
 }
@@ -85,53 +103,242 @@ function parseString(buffer , offset){
 }
 
 function parseVector2(buffer , offset){
-    var a = buffer.readFloatLE(offset);
-    var b = buffer.readFloatLE(offset + 4);
+    var x = parseFloat(buffer , offset);
+    var y = parseFloat(buffer , offset + x.length);
     return {
-        data : new TYPE.Vector2(a, b),
-        length : 8
+        data : new TYPE.Vector2(x.data, y.data),
+        length : x.length + y.length
     }
 }
 
 function parseRect2(buffer , offset){
-    var pos = parseVector2(buffer , offset).data;
-    var size = parseVector2(buffer , offset + 8).data;
+    var pos = parseVector2(buffer , offset);
+    var size = parseVector2(buffer , offset + pos.length);
 
     return {
-        data : new TYPE.Rect2(pos , size),
-        length : 12
+        data : new TYPE.Rect2(pos.data , size.data),
+        length : pos.length + size.length
     }
 }
 
 function parseVector3(buffer ,offset){
-    var x = buffer.readFloatLE(offset);
-    var y = buffer.readFloatLE(offset + 4);
-    var z = buffer.readFloatLE(offset + 8);
+    var x = parseFloat(buffer , offset);
+    var y = parseFloat(buffer , offset + x.length);
+    var z = parseFloat(buffer , offset + x.length + y.length);
     return {
-        data : new TYPE.Vector3(x,y,z),
-        length : 12
+        data : new TYPE.Vector3(x.data,y.data,z.data),
+        length : x.length + y.length + z.length
     }
 }
 
 function parseTransform2D(buffer , offset){
-    var x = parseVector2(buffer , offset ).data;
-    var y = parseVector2(buffer , offset + 8).data;
-    var origin = parseVector2(buffer , offset + 16).data;
+    var x = parseVector2(buffer , offset );
+    var y = parseVector2(buffer , offset + x.length);
+    var origin = parseVector2(buffer , offset + x.length + y.length);
 
     return {
-        data : new TYPE.Transform2D(x ,y , origin),
-        length : 24
+        data : new TYPE.Transform2D(x.data ,y.data , origin.data),
+        length : x.length + y.length + origin.length
     }
 }
 
 function parsePlane(buffer , offset){
-    var a = buffer.readFloatLE(offset);
-    var b = buffer.readFloatLE(offset + 4);
-    var c = buffer.readFloatLE(offset + 8);
-    var d = buffer.readFloatLE(offset + 12);
+    var a = parseFloat(buffer , offset);
+    var b = parseFloat(buffer , offset + a.length);
+    var c = parseFloat(buffer , offset + a.length + b.length);
+    var d = parseFloat(buffer , offset + a.length + b.length + c.length);
     return {
-        data : new TYPE.Plane(a,b,c,d),
-        length : 16
+        data : new TYPE.Plane(a.data ,b.data ,c.data,d.data),
+        length : a.length + b.length + c.length + d.length
+    }
+}
+
+function parseQuat(buffer , offset){
+    var x = parseFloat(buffer, offset);
+    var y = parseFloat(buffer ,offset + x.length);
+    var z = parseFloat(buffer ,offset + x.length + y.length);
+    var w = parseFloat(buffer, offset + x.length + y.length + z.length);
+    return {
+        data : new TYPE.Quat(x.data,y.data,z.data,w.data),
+        length : x.length + y.length + z.length + w.length
+    }
+}
+
+function parseAABB(buffer , offset){
+    var pos = parseVector3(buffer , offset);
+    var size = parseVector3(buffer , offset + pos.length );
+    return {
+        data : new TYPE.AABB(pos.data , size.data),
+        length : pos.length + size.length
+    }
+}
+
+function parseBasis(buffer , offset){
+    var x = parseVector3(buffer , offset);
+    var y = parseVector3(buffer , offset + x.length);
+    var z = parseVector3(buffer , offset + x.length + y.length);
+    return {
+        data : new TYPE.Basis(x.data,y.data,z.data),
+        length : x.length + y.length + z.length
+    }
+}
+
+function parseTransform(buffer , offset){
+    var basis = parseBasis(buffer , offset);
+    var origin = parseVector3(buffer , offset + basis.length);
+    return {
+        data : new TYPE.Transform(basis.data , origin.data),
+        length : basis.length + origin.length
+    }
+}
+
+function parseColor(buffer , offset){
+    var r = parseFloat(buffer , offset);
+    var g = parseFloat(buffer , offset + r.length);
+    var b = parseFloat(buffer , offset + r.length + g.length);
+    var a = parseFloat(buffer , offset + r.length + g.length + b.length);
+    return {
+        data : new TYPE.Color(r.data , g.data , b.data , a.data),
+        length : r.length + g.length + b.length + a.length
+    }
+}
+
+function parseDict(buffer , offset){
+    var n = buffer.readUInt32LE(offset);
+    var ret = {};
+    var length = 0;
+    for( i = 0 ; i < n ;i++){
+        var a = parse(buffer , offset + 4 + length);
+        length += a.length;
+        var b = parse(buffer , offset + 4 + length);
+        length += b.length;
+        ret[a.data] = b.data;
+    }
+    return {
+        data : ret, 
+        length : length + 4
+    }
+}
+
+function parseArray(buffer , offset){
+    var n = buffer.readUInt32LE(offset);
+    var arr = [] , length = 4;
+    for(var i = 0 ; i < n ; i++){
+        var item = parse(buffer , offset + length);
+        arr.push(item.data);
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length
+    }
+}
+
+function parseByteArray(buffer , offset){
+    var n = buffer.readUInt32LE(offset);
+    n = n - (n%4) + (n%4!==0) * 4;
+    var arr = new Uint8Array(n) , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = buffer.readUInt8(offset + length);
+        arr[i] = item;
+        length ++;
+    }
+
+    length = length - (length % 4) + (length % 4 !== 0) * 4;
+    return {
+        data : arr,
+        length : length
+    }
+}
+
+function parseIntArray(buffer , offset){
+    var n = buffer.readUInt32LE(offset);
+    var arr = new Int32Array(n) , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = parseInt(buffer , offset + length);
+        arr[i] = item.data;
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length
+    }
+}
+
+function parseRealArray(buffer ,offset){
+    var n =buffer.readUInt32LE(offset);
+    var arr = new Float32Array(n) , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = parseFloat(buffer , offset + length);
+        arr[i] = item.data;
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length
+    }
+}
+
+function parseStringArray(buffer ,offset){
+    var n =buffer.readUInt32LE(offset);
+    var arr = [] , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = parseString(buffer , offset + length);
+        arr.push(item.data);
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length
+    }
+}
+
+function parseVector2Array(buffer ,offset){
+    var n =buffer.readUInt32LE(offset);
+    var arr = [] , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = parseVector2(buffer , offset + length);
+        arr.push(item.data);
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length
+    }
+}
+
+function parseVector3Array(buffer ,offset){
+    var n =buffer.readUInt32LE(offset);
+    var arr = [] , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = parseVector3(buffer , offset + length);
+        arr.push(item.data);
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length 
+    }
+}
+
+function parseColorArray(buffer ,offset){
+    var n =buffer.readUInt32LE(offset);
+    var arr = [] , length = 4;
+    for(var i = 0 ; i < n ;i++){
+        var item = parseColor(buffer , offset + length);
+        arr.push(item.data);
+        length += item.length;
+    }
+
+    return {
+        data : arr,
+        length : length
     }
 }
 
