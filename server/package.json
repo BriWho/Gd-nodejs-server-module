@@ -5,6 +5,6 @@
     "author": "me",
     "dependencies": {
         "uniqid": "^5.0.3",
-        "ws": "^7.1.1"
+        "ws": "^7.4.6"
     }
 }
